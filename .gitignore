@@ -1,0 +1,6 @@
+*.pyc
+*.sublime-workspace
+*.egg-info/
+requirements/
+.venv/
+*.vcs-cache
