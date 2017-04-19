@@ -4,4 +4,3 @@
 requirements/
 .venv/
 *.vcs-cache
-.coverage

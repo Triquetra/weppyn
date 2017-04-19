@@ -1,4 +1,5 @@
 import multiprocessing
+import re
 import os
 import sys
 
@@ -89,14 +90,46 @@ def set_app_value(value):
     return app
 
 
+# ensure formula supplied to num_workers contains only
+# digits, parens, or math symbols
+FILTER = re.compile(r"[Xx \d()*+/-]+$")
+
+
 def num_workers(formula):
-    """Calculate number of workers for multiprocessing."""
-    if "X" in formula:
-        workers = multiprocessing.cpu_count() * 2
-    return workers
+    """Calculate number of workers for multiprocessing.
+
+    Args:
+        formula (string): A mathematical expression that may include
+            digits, parens, and the following math symbols: + - * /
+            This expression may also include X or x, where X (or x) will
+            be replaced with the number of cpu cores available.
+
+    Returns:
+        workers (int): eval(formula), minimum 1
+
+    Raises:
+        SyntaxError: If formula contains impermissible characters.
+    """
+    if FILTER.match(formula):
+        for cpu in ["X", "x"]:
+            formula = formula.replace(cpu, str(multiprocessing.cpu_count()))
+        return max(1, int(eval(formula)))  # pylint: disable=W0123
+    else:
+        raise SyntaxError("Invalid formula: {}".format(formula))
 
 
 def get_host_and_port(connection):
+    """Parse connection host and port from string.
+
+    Args:
+        connection (string): Host and/or port in the form of
+            127.0.0.1 or 127.0.0.1:8000 or :8000
+
+    Returns:
+        (host, port) tuple
+            host (string): default "127.0.0.1"
+            port (string): default "8000"
+    """
     if connection.startswith(':'):
         host = '127.0.0.1'
         port = connection[1:]
@@ -105,4 +138,4 @@ def get_host_and_port(connection):
     else:
         host = connection
         port = '8000'
-    return host, port
+    return host, int(port)
