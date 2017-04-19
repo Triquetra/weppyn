@@ -19,7 +19,7 @@ MEINHELD_PARAMS = [
 @pytest.fixture(scope="module")
 def myserver():
     cmd = delegator.run([PROG, "meinheld", TEST_APP, "--bind=0.0.0.0"], block=False)
-    time.sleep(0.1)
+    time.sleep(1)
     yield cmd
     cmd.kill()
 
