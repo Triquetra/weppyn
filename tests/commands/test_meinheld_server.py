@@ -10,21 +10,21 @@ from .shared import TEST_APP, PROG
 
 
 MEINHELD_PARAMS = [
-    [PROG, "meinheld", TEST_APP],
-    [PROG, "meinheld", "--bind=False", TEST_APP],
-    [PROG, "meinheld", ]
+    ([], ""),
+    (["--nopatch=True"], ""),
+    (["--bind=:8060"], "http://127.0.0.1:8060"),
+    (["--bind=127.0.0.2"], "http://127.0.0.2:8000")
 ]
 
 
-@pytest.fixture(scope="module")
-def myserver():
-    cmd = delegator.run([PROG, "meinheld", TEST_APP, "--bind=0.0.0.0"], block=False)
+pytest.mark.parametrize("cmd,conn", MEINHELD_PARAMS)
+def test_meinheld_server(cmd, conn):
+    call = [PROG, "meinheld", TEST_APP]
+    call.extend(cmd)
+    srv = delegator.run(call, block=False)
     time.sleep(1)
-    yield cmd
-    cmd.kill()
-
-
-def test_meinheld_server(myserver):
-    response = requests.get("http://127.0.0.1:8000", timeout=60)
+    conn = conn or "http://127.0.0.1:8000"
+    response = requests.get(conn, timeout=60)
     assert response.status_code == requests.codes.ok
     assert "Hello WEPPY!" in response.text
+    srv.kill()

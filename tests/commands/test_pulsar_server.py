@@ -18,8 +18,8 @@ pytestmark = pytest.mark.skip(reason="Pulsar < 2.0 is incompatible with click")
 
 @pytest.fixture
 def mock_wsgi():
-    from pulsar.apps import wsgi
     wsgi = Mock(wsgi)
+    return wsgi
 
 
 PULSAR_SERVER_DATA = [

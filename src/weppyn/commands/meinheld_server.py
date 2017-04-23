@@ -13,10 +13,10 @@ else:
 @click.argument('app', nargs=1, required=False)
 @click.option('--bind', default='127.0.0.1:8000', show_default=True,
               help='HOST, HOST:PORT, :PORT')
-@click.option('--patch', type=bool, default=True, show_default=True,
-              help="monkeypatch the socket module")
+@click.option('--nopatch', type=bool, default=False, show_default=True,
+              help="do not monkeypatch the socket module")
 @click.pass_context
-def cli(ctx, app, bind, patch):
+def cli(ctx, app, bind, nopatch):
     """Interface to the Meinheld high-performance wsgi server.
 
     APP may be either an absolute or a relative path to the module
@@ -27,7 +27,7 @@ def cli(ctx, app, bind, patch):
         print(ctx.get_help())
         exit()
     if meinheld_installed:
-        if patch:
+        if not nopatch:
             monkeypatch.patch_all()
         server.listen(get_host_and_port(bind))
         server.run(set_app_value(app))
