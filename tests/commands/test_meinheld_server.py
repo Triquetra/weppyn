@@ -17,7 +17,7 @@ MEINHELD_PARAMS = [
 ]
 
 
-pytest.mark.parametrize("cmd,conn", MEINHELD_PARAMS)
+@pytest.mark.parametrize("cmd,conn", MEINHELD_PARAMS)
 def test_meinheld_server(cmd, conn):
     call = [PROG, "meinheld", TEST_APP]
     call.extend(cmd)

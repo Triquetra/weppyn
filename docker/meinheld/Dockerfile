@@ -6,7 +6,7 @@ RUN apk update && apk upgrade && \
 	pip3 install -U --no-cache-dir pip setuptools
 
 # Install test suite dependencies
-RUN pip3 install -U --no-cache-dir pytest pytest-cov ipdb delegator.py requests
+RUN pip3 install -U --no-cache-dir pytest ipdb delegator.py requests
 
 # Install build dependencies
 RUN pip3 install -U --no-cache-dir weppy
@@ -24,6 +24,4 @@ COPY ./tests/commands/sample_app.py /home/weppy/
 
 EXPOSE 8000
 
-# ENTRYPOINT ["python", "/tmp/weppyn/docker/entrypoint.py"]
-
-# CMD ["run", "meinheld"]
+CMD ["pytest", "/tmp/weppyn/"]
