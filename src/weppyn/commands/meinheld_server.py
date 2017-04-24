@@ -32,4 +32,4 @@ def cli(ctx, app, bind, nopatch):
         server.listen(get_host_and_port(bind))
         server.run(set_app_value(app))
     else:
-        click.echo("Unable to import Meinheld.  Please install Meinheld and try again")
+        click.echo("Unable to import Meinheld.  Please install Meinheld and try again.")

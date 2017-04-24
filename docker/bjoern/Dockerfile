@@ -1,17 +1,26 @@
 FROM alpine:latest
 
-# Install python, pulsar wsgi server, and weppy
+# Install python
 RUN apk update && apk upgrade && \
-	apk add --no-cache python3 && ln -s /usr/bin/python3 /usr/bin/python && \
-	apk add --no-cache --virtual build-deps gcc musl-dev python3-dev make && \
-    pip3 install -U --no-cache-dir pip setuptools wheel && \
-    pip3 install -U --no-cache-dir pulsar uvloop http-parser weppy && \
-    apk del build-deps
+	apk add --no-cache python py2-pip && \
+	pip install -U --no-cache-dir pip setuptools
 
-RUN mkdir /home/weppy
-COPY ./weppy/* /home/weppy
-RUN chmod +x /home/weppy/myapp.py
+# Install build dependencies and test suite dependencies
+RUN apk add --no-cache --virtual build-deps gcc musl-dev python-dev libev-dev
+RUN pip install -U --no-cache-dir pytest ipdb delegator.py requests
+RUN pip install -U --no-cache-dir weppy
+RUN apk add --no-cache libev
+RUN pip install -U --no-cache-dir bjoern
+
+# Remove build dependencies
+RUN apk del build-deps
+
+# Install weppyn
+COPY . /tmp/weppyn/
+RUN	pip install --no-cache-dir /tmp/weppyn
+
+COPY ./tests/commands/sample_app.py /home/weppy/
 
 EXPOSE 8000
 
-CMD ["/home/weppy/myapp.py"]
+CMD ["pytest", "/tmp/weppyn/"]

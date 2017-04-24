@@ -1,13 +1,14 @@
-import os.path
 import pytest
 try:
     from pulsar.apps import wsgi
 except ImportError:
     pytestmark = pytest.mark.skip(reason="Unable to import Pulsar")
-try:
-    from unittest.mock import Mock
-except ImportError:
-    from mock import Mock
+else:
+    try:
+        from unittest.mock import Mock
+    except ImportError:
+        from mock import Mock
+import os.path
 from click.testing import CliRunner
 from weppyn.cli import cli as weppyn
 from .shared import TEST_APP

@@ -1,8 +1,8 @@
 import pytest
 try:
-    from meinheld import server
+    import bjoern
 except ImportError:
-    pytestmark = pytest.mark.skip(reason="Unable to import Meinheld")
+    pytestmark = pytest.mark.skip(reason="Unable to import bjoern")
 else:
     import time
     import delegator
@@ -10,17 +10,17 @@ else:
     from .shared import TEST_APP, PROG
 
 
-MEINHELD_PARAMS = [
+BJOERN_PARAMS = [
     ([], ""),
-    (["--nopatch=True"], ""),
+    (["--reuse=True"], ""),
     (["--bind=:8060"], "http://127.0.0.1:8060"),
     (["--bind=127.0.0.2"], "http://127.0.0.2:8000")
 ]
 
 
-@pytest.mark.parametrize("cmd,conn", MEINHELD_PARAMS)
-def test_meinheld_server(cmd, conn):
-    call = [PROG, "meinheld", TEST_APP]
+@pytest.mark.parametrize("cmd,conn", BJOERN_PARAMS)
+def test_bjoern_server(cmd, conn):
+    call = [PROG, "bjoern", TEST_APP]
     call.extend(cmd)
     srv = delegator.run(call, block=False)
     time.sleep(1)

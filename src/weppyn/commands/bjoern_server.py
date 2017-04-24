@@ -1,4 +1,11 @@
 import click
+try:
+    import bjoern
+except ModuleNotFoundError:
+    bjoern_installed = False
+else:
+    bjoern_installed = True
+    from weppyn.utilities import set_app_value
 
 
 @click.command('bjoern', short_help='small, fast, lightweight')
@@ -12,18 +19,13 @@ def cli(ctx, app, bind, reuse):
     if not app:
         print(ctx.get_help())
         exit()
-    try:
-        import bjoern
-    except ModuleNotFoundError:
-        msg = "Please install bjoern ('pip install bjoern'), and try again."
-        click.echo(msg)
-    else:
-        from weppyn.utilities import set_app_value
+    if bjoern_installed:
         app_exec = set_app_value(app)
         if bind.startswith('unix:'):
-            bjoern.run(ctx.app_exec, bind)
+            bjoern.run(app_exec, bind)
         else:
             from weppyn.utilities import get_host_and_port
-            app_exec = set_app_value(app)
             host, port = get_host_and_port(bind)
             bjoern.run(app_exec, host, port, reuse_port=reuse)
+    else:
+        click.echo("Unable to import bjoern.  Please install bjoern and try again.")
