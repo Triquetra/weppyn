@@ -1,7 +1,7 @@
 import click
 try:
     import bjoern
-except ModuleNotFoundError:
+except ImportError:
     bjoern_installed = False
 else:
     bjoern_installed = True

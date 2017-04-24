@@ -1,0 +1,23 @@
+FROM alpine:latest
+
+# Install python 3
+RUN apk update && apk upgrade && \
+	apk add --no-cache python3 && ln -s /usr/bin/python3 /usr/bin/python && \
+	pip3 install -U --no-cache-dir pip setuptools
+
+# Install test suite dependencies
+RUN pip3 install -U --no-cache-dir pytest ipdb delegator.py requests
+
+# Install build dependencies
+RUN pip3 install -U --no-cache-dir weppy
+RUN pip3 install -U --no-cache-dir waitress
+
+# Install weppyn
+COPY . /tmp/weppyn/
+RUN	pip3 install --no-cache-dir /tmp/weppyn
+
+COPY ./tests/commands/sample_app.py /home/weppy/
+
+EXPOSE 8000
+
+CMD ["pytest", "/tmp/weppyn/"]
